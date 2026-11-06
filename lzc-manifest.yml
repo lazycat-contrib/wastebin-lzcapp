@@ -9,10 +9,9 @@ application:
       backend: file:///lzcapp/pkg/content/licenses/
     - location: /
       backend: http://wastebin:8088/
-
 services:
   wastebin:
-    # upstream: quxfoo/wastebin:3.9.0 (official prebuilt image, see README)
+    # upstream: quxfoo/wastebin:3.9.0
     image: docker.1ms.run/quxfoo/wastebin:3.9.0
     environment:
       - WASTEBIN_ADDRESS_PORT=0.0.0.0:8088
@@ -23,7 +22,6 @@ services:
       - TZ=Asia/Shanghai
     binds:
       - /lzcapp/var/data:/data
-
 usage: |
   wastebin 是一个轻量级代码/文本粘贴板（pastebin）：语法高亮、
   粘贴内容可选 ChaCha20Poly1305 加密、支持设置过期时间与二维码分享。

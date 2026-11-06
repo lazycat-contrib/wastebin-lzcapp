@@ -1,0 +1,46 @@
+application:
+  subdomain: wastebin
+  multi_instance: false
+  # wastebin has no user account system (pastes are optionally protected by
+  # per-paste encryption passwords only), so it stays behind the platform
+  # login gate instead of using public_path.
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://wastebin:8088/
+
+services:
+  wastebin:
+    # upstream: quxfoo/wastebin:3.9.0 (official prebuilt image, see README)
+    image: docker.1ms.run/quxfoo/wastebin:3.9.0
+    environment:
+      - WASTEBIN_ADDRESS_PORT=0.0.0.0:8088
+      - WASTEBIN_DATABASE_PATH=/data/state.db
+      # Pin the cookie signing key so pastes stay deletable across restarts
+      # (upstream default regenerates it on every start). Needs >= 64 bytes.
+      - WASTEBIN_SIGNING_KEY={{ printf "%s%s" (stable_secret "signing_key_a") (stable_secret "signing_key_b") }}
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/data:/data
+
+usage: |
+  wastebin 是一个轻量级代码/文本粘贴板（pastebin）：语法高亮、
+  粘贴内容可选 ChaCha20Poly1305 加密、支持设置过期时间与二维码分享。
+
+  使用方法：
+  1. 打开应用，直接在编辑器里粘贴文本或代码，选择语言与过期时间。
+  2. 可选填一个加密口令：粘贴内容会用 ChaCha20Poly1305 加密存储，
+     查看时需输入该口令。
+  3. 保存后得到分享链接与二维码，在本平台内通过应用入口访问。
+  4. 创建粘贴的会话可以删除自己的粘贴（登录态由 cookie 维持）。
+
+  数据与安全：
+  - 粘贴数据保存在 /lzcapp/var/data（SQLite），卸载应用会一并删除，
+    请定期备份。
+  - 应用本身没有账号体系（只有可选的按粘贴加密口令），因此保持
+    平台入口鉴权，不对外开放未登录访问。
+  - cookie 签名密钥已固定，重启后已创建粘贴的删除权限不丢失。
+
+  说明：
+  - 本包未做实机验证，功能以官方文档为准，遇到问题请反馈。

@@ -1,0 +1,18 @@
+package: community.lazycat.app.wastebin
+name: wastebin
+version: 3.9.0
+description: "Minimal pastebin with syntax highlighting, encrypted pastes and expiring links."
+min_os_version: "1.5.0"
+homepage: https://github.com/matze/wastebin
+author: matze
+license: MIT
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: wastebin 粘贴板
+    description: "轻量自托管粘贴板：语法高亮、粘贴可选加密、支持过期时间与二维码分享。"
+  en:
+    name: wastebin
+    description: "Minimal pastebin with syntax highlighting, optional paste encryption and expiring links."
